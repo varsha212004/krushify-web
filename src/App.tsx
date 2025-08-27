@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Header from './components/Header';
 import Hero from './components/Hero';
 import ServiceGrid from './components/ServiceGrid';
@@ -10,6 +11,8 @@ import Dashboard from './components/Dashboard';
 import MedicineSprayingGrid from './components/MedicineSprayingGrid';
 import ArecaMedicineGrid from './components/ArecaMedicineGrid';
 import IrrigationGrid from './components/IrrigationGrid';
+import ResetPassword from './components/reset-password';
+import ForgotPassword from './components/ForgotPassword';
 
 function App() {
   const [showLogin, setShowLogin] = useState(false);
@@ -70,7 +73,6 @@ function App() {
     return (
       <IrrigationGrid 
         onBack={() => setCurrentView('home')}
-        setShowLogin={ setShowLogin}
       />
     );
   }
@@ -95,43 +97,50 @@ function App() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <Header 
-        onLogin={() => setShowLogin(true)}
-        onRegister={() => setShowRegister(true)}
-        user={user}
-        onDashboard={() => setCurrentView('dashboard')}
-        onLogout={handleLogout}
-      />
-      
-      <main>
-        <Hero />
-        <ServiceGrid onServiceSelect={handleServiceSelect} setLogin = {setShowLogin} />
-        <Stats />
-      </main>
+    <Router>
+      <Routes>
+        {/* Forgot password page */}
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/reset-password" element={<ResetPassword />} />
+        
+        {/* Main app route */}
+        <Route path="/" element={
+          <div className="min-h-screen bg-gray-50">
+            <Header 
+              onLogin={() => setShowLogin(true)}
+              onRegister={() => setShowRegister(true)}
+              user={user}
+              onDashboard={() => setCurrentView('dashboard')}
+              onLogout={handleLogout}
+            />
+            
+            <main>
+              <Hero />
+              <ServiceGrid onServiceSelect={handleServiceSelect} />
+              <Stats />
+            </main>
 
-      {showLogin && (
-        <LoginModal 
-          onClose={() => setShowLogin(false)}
-          onLogin={handleLogin}
-          onSwitchToRegister={() => {
-            setShowLogin(false);
-            setShowRegister(true);
-          }}
-        />
-      )}
+            {showLogin && (
+              <LoginModal 
+                onClose={() => setShowLogin(false)}
+                onLogin={handleLogin}
+              />
+            )}
 
-      {showRegister && (
-        <RegisterModal 
-          onClose={() => setShowRegister(false)}
-          onRegister={handleRegister}
-          onSwitchToLogin={() => {
-            setShowRegister(false);
-            setShowLogin(true);
-          }}
-        />
-      )}
-    </div>
+            {showRegister && (
+              <RegisterModal 
+                onClose={() => setShowRegister(false)}
+                onRegister={handleRegister}
+                onSwitchToLogin={() => {
+                  setShowRegister(false);
+                  setShowLogin(true);
+                }}
+              />
+            )}
+          </div>
+        } />
+      </Routes>
+    </Router>
   );
 }
 
